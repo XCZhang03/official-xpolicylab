@@ -194,8 +194,10 @@ non-learned agent-written controller qualifies for the verified board.
 
 ## 8. Setup, running and tests
 
-- One-time setup: [PORTABLE_SETUP.md](PORTABLE_SETUP.md); then build the agent image
-  (`scripts/build_official_image.sh`) and task sources (`scripts/build_task_sources.py`).
+- One-time setup: [PORTABLE_SETUP.md](PORTABLE_SETUP.md), including the generated inputs that are not
+  committed: the per-task source packages (`scripts/build_task_sources.py`, about 11 GB) and
+  the held-out formal layouts (`scripts/generate_layouts.py`). Then build the agent image
+  (`scripts/build_official_image.sh`).
 - Run sessions from the dashboard, or `robot_lab.py prepare` and
   `start_auto_research_agent.sh` ([README](README.md)).
 - Tests: `runtime/envs/robodojo/bin/python -m pytest -m "not upstream and not gpu" -q local_tests`;

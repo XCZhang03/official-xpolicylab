@@ -34,6 +34,40 @@ bash scripts/robodojo_doctor.sh                                # check pins and 
 When a session is prepared, the official task-page demonstration clip for its task
 is cached if it is missing.
 
+### Task source packages
+
+Every session workspace gets a read-only `task_source/` for its task: the task code,
+the reward checks it uses, its configs and its objects' geometry. These packages are
+generated from the pinned RoboDojo checkout and its assets, not committed (about
+11 GB for all 54 tasks, mostly `object.usdz` originals). Build them once:
+
+```bash
+python3 -m venv runtime/envs/usd-tools       # verified with Python 3.12
+runtime/envs/usd-tools/bin/pip install usd-core==26.8 numpy pyyaml
+runtime/envs/usd-tools/bin/python scripts/build_task_sources.py              # every task
+runtime/envs/usd-tools/bin/python scripts/build_task_sources.py --task make_toast   # or one task
+```
+
+Each package in `runtime/task-sources/<task>/` records the RoboDojo commit and every
+file's sha256 in `MANIFEST.json`. Deployment refuses a missing, modified or
+out-of-date package and prints this build command. Rebuild after changing the
+RoboDojo pin.
+
+### Held-out formal layouts
+
+The harness formal batch runs on collection 3 by default: novel layouts generated
+from each task's randomization, so they differ from the official collections 0–2
+used for exploration. Generate them per task before configuring a session; the
+generator refuses tasks with clutter. For example, 50 layouts for `make_kong`:
+
+```bash
+runtime/envs/robodojo/bin/python scripts/generate_layouts.py --task make_kong --count 50 \
+    --output RoboDojo/Assets/Eval_Layout/RoboDojo/arx_x5/3
+```
+
+Configuration fails until the chosen formal collection holds enough layouts for the
+task. A formal collection that is also explored is rejected.
+
 ## 3. Official policy environment and wheelhouse
 
 The official submission and the agent image share one pinned package set: torch
