@@ -25,7 +25,7 @@ one entry per check below: {"check", "passed", "evidence"}; then give a one-para
 1. mcp: list the auto_research MCP tools you have and call exploration_status once.
 2. python: with Bash, run python3 -c "from api.runtime import Context\\nwith Context() as c: print(c.call('exploration_status')['content'][0]['text'][:200])"
    (as a small script file under /workspace/code/smoke/) and record its output.
-3. sandbox: with Bash, check /.dockerenv exists, no /var/run/docker.sock, no /home/xiangcheng,
+3. sandbox: with Bash, check /.dockerenv exists, no /var/run/docker.sock, no {host_home} (the operator's home),
    no OPENROUTER_API_KEY / ANTHROPIC_API_KEY env var holding a real key, no file under
    /claude-home containing a credential, and that a TCP connection to 1.1.1.1:443 fails.
 4. skills: invoke the motion-toolkit skill with the Skill tool (not by reading files) and quote
@@ -33,7 +33,7 @@ one entry per check below: {"check", "passed", "evidence"}; then give a one-para
 5. subagent: spawn one subagent with model "sonnet" (as the subagent-audit skill does) to read
    AGENTS.md and return its first heading only.
 6. web: state whether WebFetch/WebSearch tools are available to you (they should not be).
-"""
+""".replace('{host_home}', str(Path.home()))
 
 
 def main():
