@@ -1,0 +1,5 @@
+robodojo_toolkit/_vendor/*: from RoboDojo (https://github.com/RoboDojo-Benchmark/RoboDojo), MIT License,
+Copyright (c) 2025 Yue Chen. Provenance and hashes are in each file header.
+robodojo_toolkit/data/x5/X5A.urdf, curobo_tmp.yml: RoboDojo Hugging Face assets
+(datasets/RoboDojo-Benchmark/RoboDojo, commit 91f76c28d), Apache-2.0.
+robodojo_toolkit/data/x5/curobo_harness_x5_v2.yml: RoboDojo third_party/curobo fork (d17b54c) robot/x5_v2.

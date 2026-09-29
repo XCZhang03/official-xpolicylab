@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robodojo-toolkit"
+version = "0.2.0"
+description = "Policy-side motion toolkit for RoboDojo agent bundles: pose math, X5 kinematics, 25 Hz rows and cuRobo planning"
+requires-python = ">=3.10"
+license = {text = "MIT (toolkit); Apache-2.0 (packaged RoboDojo robot assets)"}
+dependencies = ["numpy>=1.23", "scipy>=1.10"]
+
+[project.optional-dependencies]
+# Planning needs the RoboDojo cuRobo fork (pinned third_party/curobo wheel), installed separately.
+planning = ["torch==2.7.0", "warp-lang==1.11.0", "transforms3d", "pyyaml>=6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+robodojo_toolkit = ["data/x5/*"]

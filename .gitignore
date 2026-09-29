@@ -1,0 +1,27 @@
+# Machine-local storage and upstream checkouts reconstructed by bootstrap.
+/runtime
+/codex_agent/runtime
+/RoboDojo
+/GPT-as-Policy
+/external
+/local_tests/*
+!/local_tests/unit/
+!/local_tests/README.md
+/scripts/run_gpt_policy.sh
+/scripts/setup_codex_login.sh
+
+# Local orchestration state and caches.
+/.agents
+/.codex
+/.dtach
+/.pytest_cache
+/.ruff_cache
+/.local-runtime
+**/__pycache__/
+*.py[cod]
+*.log
+
+# IDE and OS metadata.
+.DS_Store
+.idea/
+.vscode/

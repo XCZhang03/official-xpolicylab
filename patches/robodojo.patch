@@ -1,0 +1,237 @@
+diff --git a/env/camera_manager/camera_manager.py b/env/camera_manager/camera_manager.py
+index 501b741..77c905f 100644
+--- a/env/camera_manager/camera_manager.py
++++ b/env/camera_manager/camera_manager.py
+@@ -453,9 +453,28 @@ class CameraManager:
+ 
+     def get_camera_intrinsics(self, cam_id: int, env_id: int = 0) -> np.ndarray:
+         """
+-        Return 3x3 intrinsic matrix K for the given camera, computed from config params.
+-        Falls back to identity if the camera type has no focal/aperture info (e.g. Kinect USD).
++        Return the live 3x3 intrinsic matrix K for the optical camera prim.
++
++        Isaac can adjust aperture values to maintain square pixels, so prefer
++        the camera's resolved USD attributes over the source YAML.  The config
++        formula remains a fallback for camera assets that do not expose a
++        pinhole calibration API.
+         """
++        camera = self.cameras[env_id][cam_id]
++        try:
++            matrix = camera.get_intrinsics_matrix(device="cpu")
++            if hasattr(matrix, "detach"):
++                matrix = matrix.detach()
++            if hasattr(matrix, "cpu"):
++                matrix = matrix.cpu()
++            if hasattr(matrix, "numpy"):
++                matrix = matrix.numpy()
++            matrix = np.asarray(matrix, dtype=np.float64)
++            if matrix.shape == (3, 3) and np.isfinite(matrix).all():
++                return matrix
++        except Exception:
++            pass
++
+         camera_name = self.camera_names[env_id][cam_id]
+         camera_cfg = self.camera_config[camera_name]
+         args_info = REAL_MAP.get(camera_cfg.camera.type, None)
+@@ -463,19 +482,34 @@ class CameraManager:
+             return np.eye(3, dtype=np.float64)
+         width, height = args_info["resolution"]
+         fx = (width * args_info["focal_length"]) / args_info["horizontal_aperture"]
++        fy = (height * args_info["focal_length"]) / args_info.get("vertical_aperture", args_info["horizontal_aperture"])
+         cx, cy = width / 2.0, height / 2.0
+-        return np.array([[fx, 0, cx], [0, fx, cy], [0, 0, 1]], dtype=np.float64)
++        return np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], dtype=np.float64)
+ 
+     def get_camera_extrinsics(self, cam_id: int, env_id: int) -> np.ndarray:
+         """
+-        Return 4x4 camera-to-world matrix for the given camera (world frame).
+-        Uses get_world_pose so mounted (wrist) cameras are correctly handled.
++        Return the live 4x4 optical-camera-to-world matrix in USD axes.
++
++        Reading the camera prim itself preserves any fixed transform between a
++        sensor mesh mount and its optical frame, in addition to the moving
++        wrist transform.
+         Quaternion convention: (w, x, y, z).
+         """
+-        camera_xform = self.cameras_xform[env_id][cam_id]
+-        pos, quat = camera_xform.get_world_pose()
+-        pos = pos.cpu().numpy().astype(np.float64)
+-        quat = quat.cpu().numpy().astype(np.float64)
++        camera = self.cameras[env_id][cam_id]
++        pos, quat = camera.get_world_pose(camera_axes="usd")
++        for name, value in (("pos", pos), ("quat", quat)):
++            if hasattr(value, "detach"):
++                value = value.detach()
++            if hasattr(value, "cpu"):
++                value = value.cpu()
++            if hasattr(value, "numpy"):
++                value = value.numpy()
++            if name == "pos":
++                pos = value
++            else:
++                quat = value
++        pos = np.asarray(pos, dtype=np.float64)
++        quat = np.asarray(quat, dtype=np.float64)
+         w, x, y, z = quat[0], quat[1], quat[2], quat[3]
+         R = np.array(
+             [
+diff --git a/env/planner_manager/curobo_planner.py b/env/planner_manager/curobo_planner.py
+index 311c075..e44f17b 100644
+--- a/env/planner_manager/curobo_planner.py
++++ b/env/planner_manager/curobo_planner.py
+@@ -1,4 +1,5 @@
+ from copy import deepcopy
++from pathlib import Path
+ 
+ from curobo.batch_motion_planner import BatchMotionPlanner, MotionPlannerCfg
+ from curobo.inverse_kinematics import InverseKinematics, InverseKinematicsCfg
+@@ -43,7 +44,10 @@ class CuroboPlanner:
+         # translate from baselink to arm's base
+         with open(self.yml_path) as f:
+             yml_data = yaml.safe_load(f)
+-        self.frame_bias = yml_data["planner"]["frame_bias"]
++        # Older RoboTwin planner files carried a separate ``planner`` block.
++        # RoboDojo's vendored cuRobo v2 files do not, so keep the transform
++        # identity unless a legacy file explicitly supplies a bias.
++        self.frame_bias = yml_data.get("planner", {}).get("frame_bias", [0.0, 0.0, 0.0])
+ 
+         self.robot_cfg, self.scene_model = self._build_robot_and_scene_cfg(yml_data, table_height)
+         cspace_cfg = self.robot_cfg["robot_cfg"]["kinematics"].get("cspace", {})
+@@ -198,6 +202,10 @@ class CuroboPlanner:
+             res_result["velocity"] = self._extract_trajectory(
+                 interpolated.velocity, batched=False, traj_joint_names=jnames
+             )
++            # Sampling period for converting planner positions to policy actions.
++            res_result["interpolation_dt"] = float(
++                self.motion_planner.trajopt_solver.config.interpolation_dt
++            )
+             if res_result["velocity"] is None and res_result["position"] is not None:
+                 res_result["velocity"] = np.zeros_like(res_result["position"])
+             return res_result
+@@ -424,7 +432,21 @@ class CuroboPlanner:
+ 
+     def _build_robot_and_scene_cfg(self, yml_data, table_height):
+         """Translate a Maniverse-style yml into v2 robot_cfg + scene_model."""
+-        kinematics = deepcopy(yml_data.get("robot_cfg", {}).get("kinematics", {}))
++        # RoboDojo ships the native cuRobo v2 schema with ``kinematics`` at the
++        # document root; older task files nested it below ``robot_cfg``.
++        kinematics_source = yml_data.get("robot_cfg", {}).get("kinematics")
++        if kinematics_source is None:
++            kinematics_source = yml_data.get("kinematics", {})
++        kinematics = deepcopy(kinematics_source)
++        robot_dir = Path(self.yml_path).resolve().parent
++        asset_root = Path(str(kinematics.get("asset_root_path", ""))).expanduser()
++        if not asset_root.is_dir():
++            kinematics["asset_root_path"] = str(robot_dir)
++        urdf_path = kinematics.get("urdf_path")
++        if urdf_path:
++            urdf = Path(str(urdf_path)).expanduser()
++            if not urdf.is_file():
++                kinematics["urdf_path"] = str(robot_dir / urdf.name)
+         ee_link = kinematics.get("ee_link", None)
+         tool_frames = kinematics.get("tool_frames", None)
+         if tool_frames is None:
+@@ -508,6 +530,8 @@ class CuroboPlanner:
+             robot=self.robot_cfg,
+             scene_model=self.scene_model,
+             device_cfg=self.device_cfg,
++            position_tolerance=0.001,
++            orientation_tolerance=0.005,
+             num_ik_seeds=32,
+             num_trajopt_seeds=4,
+             self_collision_check=True,
+diff --git a/env/robot_manager/robot_class/x5.py b/env/robot_manager/robot_class/x5.py
+index 150ec29..2bc2b6f 100644
+--- a/env/robot_manager/robot_class/x5.py
++++ b/env/robot_manager/robot_class/x5.py
+@@ -3,6 +3,7 @@ import os
+ import numpy as np
+ 
+ from utils.pipeline_utils import get_embodiment_config_by_robot_type
++from env.global_configs import ROOT_DIR
+ 
+ 
+ class X5:
+@@ -22,6 +23,13 @@ class X5:
+         self.urdf_path = os.path.join(self.robot_file, self.robot_args.get("urdf_path"))
+         self.srdf_path = os.path.join(self.robot_file, self.robot_args.get("srdf_path", ""))
+         self.curobo_yml_path = os.path.join(self.robot_file, "curobo.yml")
++        if not os.path.isfile(self.curobo_yml_path):
++            # The checkout keeps the v2 CuRobo robot config in the vendored
++            # library when the downloaded asset bundle only contains
++            # ``curobo_tmp.yml``.
++            self.curobo_yml_path = os.path.join(
++                ROOT_DIR, "third_party", "curobo", "robot", "x5_v2", "curobo.yml"
++            )
+         self.ee_joint_name = self.robot_args["ee_joints"]
+         self.ee_link_name = self.robot_args["ee_link"]
+         self.arm_joints_name = self.robot_args["arm_joints_name"]
+diff --git a/src/eval_client/eval_env.py b/src/eval_client/eval_env.py
+index 182e91d..c0d3d51 100644
+--- a/src/eval_client/eval_env.py
++++ b/src/eval_client/eval_env.py
+@@ -60,6 +60,10 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
+             self.policy_name = self.eval_cfg.get("policy_name", None)
+             self.additional_info = self.eval_cfg.get("additional_info", "")
+             self.eval_seed = self.eval_cfg.get("seed", 0)
++            # Published evaluation keeps the configured horizon by default.
++            # Agent-owned interactive sessions may explicitly disable only
++            # this limit while retaining task completion/failure checks.
++            self.enforce_step_limit = True
+             self.physx_monitor_enabled = bool(self.eval_cfg.get("physx_monitor_enabled", False))
+             if self.physx_monitor_enabled:
+                 from src.eval_client.physx_warning_monitor import (
+@@ -355,6 +359,20 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
+             self.validate_action_dict(action)
+             self.take_action_batch([action], env_idx_list=[0])
+ 
++        def _step_limit_reached(self, env_idx):
++            return bool(
++                getattr(self, "enforce_step_limit", True)
++                and self.take_action_cnt[env_idx] >= self.step_lim
++            )
++
++        def _step_progress(self, env_idx):
++            count = self.take_action_cnt[env_idx]
++            return (
++                f"{count} / {self.step_lim}"
++                if getattr(self, "enforce_step_limit", True)
++                else f"{count} total (no hard limit)"
++            )
++
+         def take_action_batch(self, actions_list, env_idx_list=None):
+             if self.physx_monitor_enabled:
+                 self._check_physx_broken_envs()
+@@ -365,12 +383,12 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
+                 action = actions_list[idx]
+                 self.validate_action_dict(action)
+                 action_type = self.get_action_type(action)
+-                if self.take_action_cnt[env_idx] == self.step_lim or self.end_flag[env_idx]:
++                if self._step_limit_reached(env_idx) or self.end_flag[env_idx]:
+                     continue
+ 
+                 self.take_action_cnt[env_idx] += 1
+                 print(
+-                    f"env{env_idx} step: \033[92m{self.take_action_cnt[env_idx]} / {self.step_lim}\033[0m",
++                    f"env{env_idx} step: \033[92m{self._step_progress(env_idx)}\033[0m",
+                     end="\r",
+                 )
+                 control_info = dict()
+@@ -842,7 +860,7 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
+             pre_end_flag = deepcopy(self.end_flag)
+             final_check = False
+             for env_idx in range(self.num_envs):
+-                if self.take_action_cnt[env_idx] >= self.step_lim or (
++                if self._step_limit_reached(env_idx) or (
+                     not self.success[env_idx] and not self.end_flag[env_idx]
+                 ):
+                     final_check = True
+@@ -855,7 +873,7 @@ def create_eval_env(config, app, resume_state=None, **kwargs):
+                     self.end_flag[env_idx] = True
+                     self.success[env_idx] = True
+                     continue
+-                if self.take_action_cnt[env_idx] >= self.step_lim or not self.success[env_idx]:
++                if self._step_limit_reached(env_idx) or not self.success[env_idx]:
+                     self.end_flag[env_idx] = True
+                     self.success[env_idx] = False
+ 

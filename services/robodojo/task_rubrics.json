@@ -1,0 +1,804 @@
+{
+  "schema_version": 1,
+  "retrieved_at_utc": "2026-09-22T17:12:07.360582+00:00",
+  "tasks": {
+    "align_blocks": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/align-blocks/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The alignment, reset, or no-lift condition is not satisfied."
+        },
+        {
+          "points": "100",
+          "condition": "The three cubes are in one straight aligned row, the robot returns to origin, and no cube has been lifted above the allowed height during the episode."
+        }
+      ]
+    },
+    "arrange_largest_number": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/arrange-largest-number/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No digit is placed correctly."
+        },
+        {
+          "points": "5",
+          "condition": "Any one digit is placed on its correct pad in descending-number order, with valid orientation and the gripper open."
+        },
+        {
+          "points": "15",
+          "condition": "Any two digits are correctly placed."
+        },
+        {
+          "points": "25",
+          "condition": "In a 5-digit layout, any three digits are correctly placed."
+        },
+        {
+          "points": "30",
+          "condition": "In a 4-digit layout, any three digits are correctly placed."
+        },
+        {
+          "points": "40",
+          "condition": "In a 5-digit layout, any four digits are correctly placed."
+        },
+        {
+          "points": "100",
+          "condition": "All digits are correctly ordered on the pads, have valid orientation, and the robot returns to origin."
+        }
+      ]
+    },
+    "build_tower": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/build-tower/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No tower layer is completed."
+        },
+        {
+          "points": "10",
+          "condition": "The lower board is placed across two upright supports, remains stable and centered on them, and the gripper is open."
+        },
+        {
+          "points": "30",
+          "condition": "The middle board is placed on the completed lower layer, stays centered over it, and all lower and middle pieces remain upright."
+        },
+        {
+          "points": "100",
+          "condition": "The full tower is completed with the top pieces, all eight pieces remain upright, each layer stays centered over the layer below it, the gripper is open, and the robot returns to origin."
+        }
+      ]
+    },
+    "classify_objects_by_language": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/classify-objects-by-language/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No specified category is placed into its assigned basket."
+        },
+        {
+          "points": "10",
+          "condition": "One specified category is placed into its assigned basket, no other objects are in that basket, and the gripper is open."
+        },
+        {
+          "points": "40",
+          "condition": "Two specified categories are placed into their assigned baskets, with no extra objects in those baskets."
+        },
+        {
+          "points": "100",
+          "condition": "All three specified categories are placed into the left, middle, and right baskets as instructed, no basket contains objects from another category, and the robot returns to origin."
+        }
+      ]
+    },
+    "classify_objects": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/classify-objects/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No category basket is completed."
+        },
+        {
+          "points": "15",
+          "condition": "One basket contains exactly one complete object category, with no objects from other categories, and the gripper is open."
+        },
+        {
+          "points": "40",
+          "condition": "Two baskets each contain exactly one complete category."
+        },
+        {
+          "points": "100",
+          "condition": "All three categories are separated into three baskets, the objects are settled inside the baskets, and the robot returns to origin."
+        }
+      ]
+    },
+    "cover_blocks": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/cover-blocks/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No block-covering step is completed."
+        },
+        {
+          "points": "5",
+          "condition": "All three blocks are covered by cups from left to right."
+        },
+        {
+          "points": "15",
+          "condition": "After all blocks are covered, the red block is uncovered first while the green and blue blocks remain covered."
+        },
+        {
+          "points": "30",
+          "condition": "The red and green blocks are uncovered in order while the blue block remains covered."
+        },
+        {
+          "points": "100",
+          "condition": "All three blocks are first covered from left to right, then uncovered in red, green, and blue order; cup orientation remains valid and the robot returns to origin."
+        }
+      ]
+    },
+    "deposit_coin": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/deposit-coin/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The coin is not lifted."
+        },
+        {
+          "points": "20",
+          "condition": "The coin is lifted at least 8 cm."
+        },
+        {
+          "points": "100",
+          "condition": "The coin bounding box is inside the coin bank slot region, and the robot returns to origin."
+        }
+      ]
+    },
+    "fasten_screws": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/fasten-screws/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No nut is fastened onto its matching bolt."
+        },
+        {
+          "points": "20",
+          "condition": "Any one nut is upright, aligned with its matching bolt, rotated onto the bolt to the required depth, and the gripper is open."
+        },
+        {
+          "points": "50",
+          "condition": "Any two matching nut-bolt pairs are fastened correctly."
+        },
+        {
+          "points": "100",
+          "condition": "All three nut-bolt pairs are fastened, the gripper is open, and the robot returns to origin."
+        }
+      ]
+    },
+    "fill_egg_holder": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/fill-egg-holder/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No egg is placed into the egg holder."
+        },
+        {
+          "points": "10",
+          "condition": "Any one egg is inside the egg holder and close to the holder bottom, with the gripper open."
+        },
+        {
+          "points": "25",
+          "condition": "Any two eggs are placed correctly into the egg holder."
+        },
+        {
+          "points": "40",
+          "condition": "Any three eggs are placed correctly into the egg holder."
+        },
+        {
+          "points": "90",
+          "condition": "All four eggs are placed in the holder, but the lid is not fully closed yet."
+        },
+        {
+          "points": "100",
+          "condition": "All four eggs are in the holder, the holder lid is correctly and fully closed, and the robot returns to origin."
+        }
+      ]
+    },
+    "fill_pen_holder": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/fill-pen-holder/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No pen is correctly inserted into the pen holder."
+        },
+        {
+          "points": "10",
+          "condition": "Any one pen is correctly inserted tip-up into the upright pen holder."
+        },
+        {
+          "points": "25",
+          "condition": "Any two pens are correctly inserted into the pen holder."
+        },
+        {
+          "points": "40",
+          "condition": "Any three pens are correctly inserted into the pen holder."
+        },
+        {
+          "points": "90",
+          "condition": "All four pens are inserted into the upright pen holder, but the robot has not returned to origin yet."
+        },
+        {
+          "points": "100",
+          "condition": "All four pens are inserted, the pen holder is upright, and the robot returns to origin."
+        }
+      ]
+    },
+    "fold_clothes": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/fold-clothes/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The sleeve-fold condition is not reached."
+        },
+        {
+          "points": "20",
+          "condition": "When the gripper opens, both sleeves are folded inward close to the opposite chest points."
+        },
+        {
+          "points": "100",
+          "condition": "Both sleeves are folded inward, the hems are close to the shoulder points in x/y, the hem line is aligned with the shoulder line within the angle threshold, and the robot returns to origin."
+        }
+      ]
+    },
+    "general_pickup": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/general-pickup/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The target object is not lifted high enough."
+        },
+        {
+          "points": "100",
+          "condition": "The target object is lifted at least 10 cm."
+        }
+      ]
+    },
+    "hang_mugs": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/hang-mugs/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No mug is hung on the mug rack."
+        },
+        {
+          "points": "15",
+          "condition": "Any one mug is hung on the mug rack and the gripper is open."
+        },
+        {
+          "points": "40",
+          "condition": "Any two mugs are hung on the mug rack."
+        },
+        {
+          "points": "100",
+          "condition": "All three mugs are hung on the rack and the robot returns to origin."
+        }
+      ]
+    },
+    "imitate_sorting_sequence": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/imitate-sorting-sequence/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The first sequence step is not completed, or the policy robot moves before the opposite robot arm finishes."
+        },
+        {
+          "points": "5",
+          "condition": "The first target object is placed into the policy basket, later target objects are still outside it, all demonstration objects remain in the demo basket, and the gripper is open."
+        },
+        {
+          "points": "15",
+          "condition": "The first two target objects are placed in the correct sequence."
+        },
+        {
+          "points": "30",
+          "condition": "The first three target objects are placed in the correct sequence."
+        },
+        {
+          "points": "50",
+          "condition": "The first four target objects are placed in the correct sequence."
+        },
+        {
+          "points": "100",
+          "condition": "All five target objects are placed in sequence, all demonstration objects remain in the demo basket, the gripper is open, and the robot returns to origin."
+        }
+      ]
+    },
+    "insert_key": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/insert-key/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The key is not lifted."
+        },
+        {
+          "points": "15",
+          "condition": "The key is lifted at least 5 cm."
+        },
+        {
+          "points": "100",
+          "condition": "The key is inserted deep enough into the slot, aligned closely in x/y, kept upright, and successfully turned after insertion."
+        }
+      ]
+    },
+    "insert_tubes": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/insert-tubes/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No tube is inserted into a slot."
+        },
+        {
+          "points": "20",
+          "condition": "Any one tube is inside the slot, inserted to the required depth, upright, and the gripper is open."
+        },
+        {
+          "points": "40",
+          "condition": "Any two tubes are inserted correctly."
+        },
+        {
+          "points": "100",
+          "condition": "All three tubes are inserted correctly and the robot returns to origin."
+        }
+      ]
+    },
+    "make_kong": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/make-kong/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The kong declaration state is not completed."
+        },
+        {
+          "points": "100",
+          "condition": "The three matching Mahjong tiles are pushed down, the non-matching tiles remain upright on the table, the target tile is correctly grasped and placed at the required position, the gripper is open, and no invalid robot motion is detected."
+        }
+      ]
+    },
+    "make_toast": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/make-toast/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No bread slice is inserted into a toaster slot."
+        },
+        {
+          "points": "25",
+          "condition": "One bread slice is inserted into a toaster slot and all bread axes satisfy the required orientation."
+        },
+        {
+          "points": "50",
+          "condition": "Two bread slices are inserted into the toaster slots and all bread axes satisfy the required orientation."
+        },
+        {
+          "points": "100",
+          "condition": "Both toaster slots are filled, exactly two bread slices remain on the shelf, the toaster control is pressed down, and the robot returns to origin."
+        }
+      ]
+    },
+    "match_and_pick_from_conveyor": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/match-and-pick-from-conveyor/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The matching target object is not lifted high enough."
+        },
+        {
+          "points": "100",
+          "condition": "The matching target object is lifted at least 10 cm."
+        }
+      ]
+    },
+    "organize_table": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/organize-table/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No target item is organized correctly."
+        },
+        {
+          "points": "25",
+          "condition": "Any one target item is organized correctly: mouse on mouse pad, keyboard in the frame, figurine on its stand, or alarm clock on the drawer, with the gripper open."
+        },
+        {
+          "points": "50",
+          "condition": "Any two target items are organized correctly."
+        },
+        {
+          "points": "75",
+          "condition": "Any three target items are organized correctly."
+        },
+        {
+          "points": "100",
+          "condition": "All four target items are organized correctly and the robot returns to origin."
+        }
+      ]
+    },
+    "pack_objects_into_box": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/pack-objects-into-box/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No object is placed correctly into the box."
+        },
+        {
+          "points": "10",
+          "condition": "Any one object is inside the box with its front side facing left, the box is aligned, and the gripper is open."
+        },
+        {
+          "points": "25",
+          "condition": "Any two objects are placed correctly into the box."
+        },
+        {
+          "points": "50",
+          "condition": "Any three objects are placed correctly into the box."
+        },
+        {
+          "points": "100",
+          "condition": "All four objects are placed in the aligned box with correct facing direction, and the robot returns to origin."
+        }
+      ]
+    },
+    "pick_from_conveyor_by_image": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/pick-from-conveyor-by-image/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The target object is not placed into the lifted basket."
+        },
+        {
+          "points": "100",
+          "condition": "The image-specified target object is in the basket and lifted at least 8 cm."
+        }
+      ]
+    },
+    "play_stacking_toy": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/play-stacking-toy/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No peg group is completed."
+        },
+        {
+          "points": "10",
+          "condition": "One peg group is completed with its pieces aligned on the correct peg and inserted into the base, with the gripper open."
+        },
+        {
+          "points": "30",
+          "condition": "Two peg groups are completed."
+        },
+        {
+          "points": "60",
+          "condition": "Three peg groups are completed."
+        },
+        {
+          "points": "100",
+          "condition": "All four peg groups are completed and the robot returns to origin."
+        }
+      ]
+    },
+    "play_tic_tac_toe": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/play-tic-tac-toe/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No player piece reaches a board cell, or the policy robot moves while the opponent robot arm is moving."
+        },
+        {
+          "points": "10",
+          "condition": "Any one player piece is placed on a board cell and the gripper is open."
+        },
+        {
+          "points": "30",
+          "condition": "Any two player pieces are placed on board cells."
+        },
+        {
+          "points": "50",
+          "condition": "Any three player pieces are placed on board cells."
+        },
+        {
+          "points": "75",
+          "condition": "Any four player pieces are placed on board cells."
+        },
+        {
+          "points": "100",
+          "condition": "All five player pieces are on board cells at the correct height and the gripper is open."
+        }
+      ]
+    },
+    "play_xylophone": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/play-xylophone/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The full left-to-right strike sequence is not completed."
+        },
+        {
+          "points": "100",
+          "condition": "The mallet tip hits all xylophone keys from left to right, and after each hit the mallet is lifted by at least 0.025 m."
+        }
+      ]
+    },
+    "plug_in_charger": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/plug-in-charger/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The charger is not fully plugged into the socket."
+        },
+        {
+          "points": "100",
+          "condition": "The charger is inside the socket, inserted to the required depth, upright, and the robot returns to origin."
+        }
+      ]
+    },
+    "pour_balls_into_vase": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/pour-balls-into-vase/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "Not all balls are transferred into the vase."
+        },
+        {
+          "points": "100",
+          "condition": "All seven balls are inside the vase, the cup is upright, and the robot returns to origin."
+        }
+      ]
+    },
+    "pour_by_language": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/pour-by-language/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The first target pour is not completed."
+        },
+        {
+          "points": "20",
+          "condition": "The liquid from the first specified bottle is poured into its specified bowl, and the other two liquids have not been poured into their bowls."
+        },
+        {
+          "points": "50",
+          "condition": "The first two specified liquids are poured into their bowls, and the third liquid has not yet been poured."
+        },
+        {
+          "points": "100",
+          "condition": "All three specified liquids are poured into their corresponding bowls."
+        }
+      ]
+    },
+    "pour_liquid_into_cup": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/pour-liquid-into-cup/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The liquid is not successfully poured into the cup."
+        },
+        {
+          "points": "100",
+          "condition": "The cup contains the required amount of liquid and the bottle is upright."
+        }
+      ]
+    },
+    "press_by_number": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/press-by-number/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The required press counts or confirm sequence is not completed exactly."
+        },
+        {
+          "points": "100",
+          "condition": "Button `0` is pressed exactly the number shown by `num0`, the blue confirm button is pressed, button `1` is pressed exactly the number shown by `num1`, the blue confirm button is pressed again, and the robot returns to origin."
+        }
+      ]
+    },
+    "push_t": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/push-t/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The target pose, reset, or no-lift condition is not satisfied."
+        },
+        {
+          "points": "100",
+          "condition": "The T-shaped block is within the target xy threshold, its orientation matches the target, the robot returns to origin, and the block is never lifted above the allowed height."
+        }
+      ]
+    },
+    "put_bottles_into_dustbin": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/put-bottles-into-dustbin/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No bottle is placed into the dustbin."
+        },
+        {
+          "points": "10",
+          "condition": "Any one bottle is inside the dustbin, and the gripper is open."
+        },
+        {
+          "points": "25",
+          "condition": "Any two bottles are inside the dustbin."
+        },
+        {
+          "points": "40",
+          "condition": "Any three bottles are inside the dustbin."
+        },
+        {
+          "points": "100",
+          "condition": "All four bottles are inside the dustbin and the robot returns to origin."
+        }
+      ]
+    },
+    "solve_equation": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/solve-equation/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The missing equation piece is not placed correctly."
+        },
+        {
+          "points": "100",
+          "condition": "The correct missing number/operator piece is placed on the missing mat and the robot returns to origin."
+        }
+      ]
+    },
+    "sort_nesting_dolls_by_size": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/sort-nesting-dolls-by-size/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The dolls are not arranged in the required size order."
+        },
+        {
+          "points": "100",
+          "condition": "All five nesting dolls stand in a one horizontal straight row, are ordered from left to right from smallest to largest, and the robot returns to origin."
+        }
+      ]
+    },
+    "stack_blocks_by_language": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/stack-blocks-by-language/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The first ordered stack is not completed."
+        },
+        {
+          "points": "20",
+          "condition": "The first two specified blocks are stacked in the instructed order, the bottom block remains on the table, and the gripper is open."
+        },
+        {
+          "points": "100",
+          "condition": "All three specified blocks are stacked in order and the robot returns to origin."
+        }
+      ]
+    },
+    "stack_blocks": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/stack-blocks/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No two-block stack is completed."
+        },
+        {
+          "points": "15",
+          "condition": "Any two of the three blocks are stacked, and the gripper is open."
+        },
+        {
+          "points": "100",
+          "condition": "All three blocks are stacked together and the robot returns to origin."
+        }
+      ]
+    },
+    "stack_bowls": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/stack-bowls/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No two bowls are stacked correctly."
+        },
+        {
+          "points": "15",
+          "condition": "Any two bowls are stacked upright and the gripper is open."
+        },
+        {
+          "points": "100",
+          "condition": "All three bowls are stacked together, all bowls are upright, the bottom bowl is strictly and stably placed on the table, and the robot returns to origin."
+        }
+      ]
+    },
+    "store_laptop_and_headphones": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/store-laptop-and-headphones/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "Neither the headphones nor the laptop is stored correctly."
+        },
+        {
+          "points": "20",
+          "condition": "The headphones are placed on the stand: the headband bridge is close to the support cradle and aligned, with the gripper open."
+        },
+        {
+          "points": "80",
+          "condition": "The headphones are correctly placed on the stand, and the laptop is closed, vertically inserted into the laptop rack, and within the required range."
+        },
+        {
+          "points": "100",
+          "condition": "Both the headphones and laptop conditions are satisfied and the robot returns to origin."
+        }
+      ]
+    },
+    "store_tools_in_toolbox": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/store-tools-in-toolbox/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "No tool is placed into its matching toolbox slot."
+        },
+        {
+          "points": "25",
+          "condition": "Any one tool is placed in its matching toolbox slot with the gripper open."
+        },
+        {
+          "points": "50",
+          "condition": "Any two tools are placed into their matching toolbox slots."
+        },
+        {
+          "points": "75",
+          "condition": "Any three tools are placed into their matching toolbox slots."
+        },
+        {
+          "points": "100",
+          "condition": "All four tools are placed in their matching slots, covered by the toolbox, and the robot returns to origin."
+        }
+      ]
+    },
+    "swap_blocks": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/swap-blocks/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The swap sequence is not completed, or the button is not pressed after each move."
+        },
+        {
+          "points": "100",
+          "condition": "The two target blocks are swapped using the empty mat, the button is pressed once after each of the three moves, the blocks finish on each other's original mats, and the robot returns to origin."
+        }
+      ]
+    },
+    "swap_t": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/swap-t/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The two T blocks are not swapped with the required pose accuracy."
+        },
+        {
+          "points": "100",
+          "condition": "The two T-shaped blocks swap their original xy positions, their orientations match the swapped targets, and the robot returns to origin."
+        }
+      ]
+    },
+    "sweep_blocks": {
+      "source_url": "https://robodojo-benchmark.com/doc/sim-tasks/sweep-blocks/",
+      "criteria": [
+        {
+          "points": "0",
+          "condition": "The blocks are not fully swept into the dustpan."
+        },
+        {
+          "points": "100",
+          "condition": "The dustpan is positioned left of the broom, stably placed upright on the table, all blocks are inside the dustpan, and the robot returns to origin."
+        }
+      ]
+    }
+  }
+}

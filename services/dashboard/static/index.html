@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoboDojo Auto-Research</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1b1f24; --muted: #5f6b7a; --line: #dde2e8;
+  --accent: #2563eb; --good: #15803d; --bad: #b91c1c; --warn: #a16207; --code: #f1f3f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111418; --panel: #1a1f25; --text: #e6e9ed; --muted: #97a2b0; --line: #2c333c;
+          --accent: #6ea0ff; --good: #4ade80; --bad: #f87171; --warn: #facc15; --code: #232a32; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+       font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+         padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--panel); }
+header h1 { margin: 0; font-size: 17px; }
+header .sub { color: var(--muted); font-size: 12px; }
+main { max-width: 1280px; margin: 0 auto; padding: 16px 20px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+section { min-width: 0; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+section h2 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 10px 16px; }
+.stat .k { color: var(--muted); font-size: 12px; }
+.stat .v { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+input, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line);
+                border-radius: 6px; padding: 5px 8px; min-width: 0; }
+button { font: inherit; border: 1px solid var(--line); background: var(--bg); color: var(--text);
+         border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.danger { color: var(--bad); border-color: var(--bad); }
+button:disabled { opacity: .45; cursor: default; }
+pre, code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+pre { background: var(--code); border-radius: 6px; padding: 8px 10px; margin: 6px 0 0; overflow: auto;
+      max-height: 360px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.muted { color: var(--muted); } .good { color: var(--good); } .bad { color: var(--bad); } .warn { color: var(--warn); }
+.cameras { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 10px; }
+.cameras figure { margin: 0; } .cameras figcaption { font-size: 12px; color: var(--muted); }
+.cameras img { width: 100%; border-radius: 6px; background: var(--code); aspect-ratio: 4 / 3; object-fit: contain; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; }
+.scroll { overflow-x: auto; }
+details > summary { cursor: pointer; color: var(--accent); }
+#message { min-height: 1.4em; }
+#paths, #release, #liveStatus, #liveMetrics { white-space: pre-line; overflow-wrap: anywhere; }
+#session { max-width: 100%; }
+header > * { min-width: 0; max-width: 100%; }
+#artifactImage { max-width: 100%; border-radius: 6px; }
+#video { width: 100%; margin-top: 10px; border-radius: 6px; background: #000; }
+label.inline { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; font-size: 13px; }
+label.inline input { min-width: 0; }
+@media (max-width: 640px) { header, main { padding-left: 16px; padding-right: 16px; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>RoboDojo Auto-Research</h1>
+    <div class="sub">Official XPolicyLab interface · RGB only · operator view</div>
+  </div>
+  <div class="row">
+    <select id="session" aria-label="Session"></select>
+    <label class="inline"><input id="history" type="checkbox"> Earlier sessions</label>
+    <button id="refresh" type="button">Refresh</button>
+  </div>
+</header>
+<main>
+  <div id="message" class="muted"></div>
+
+  <section>
+    <details id="setup">
+      <summary>New session</summary>
+      <form id="form" class="grid" style="margin-top:10px">
+        <label>Task <select id="task" name="task"></select></label>
+        <label>Simulator GPU <input name="sim_gpu" required></label>
+        <label>Research GPU <input name="research_gpu" required></label>
+        <label>Agent image <input name="image" required></label>
+        <label>Demonstration <select name="demonstration_context"></select></label>
+        <label>Agent CLI <select name="agent_cli"><option value="codex">codex</option><option value="claude">claude</option></select></label>
+        <label>Claude provider <select name="agent_provider"><option value="openrouter">openrouter</option><option value="claude-login">claude experiment login</option><option value="anthropic">anthropic</option></select></label>
+        <label>Exploration episodes <input name="episodes" type="number" min="2" max="1000"></label>
+        <label>Exploration collections <input name="exploration_collections" pattern="\d+(,\d+)*"></label>
+        <label>Exploration environments <input name="exploration_envs" type="number" min="1" max="8"></label>
+        <label>First layout index <input name="exploration_start_seed" type="number" min="0"></label>
+        <label>Formal episodes <input name="formal_episodes" type="number" min="1" max="100"></label>
+        <label>Formal workers <input name="formal_workers" type="number" min="1" max="8"></label>
+        <label>Formal first layout <input name="formal_seed" type="number" min="0"></label>
+        <label>Formal collection <input name="formal_eval_seed" type="number" min="0"></label>
+        <label>Workspace GiB <input name="workspace_gib" type="number" min="1" max="1024"></label>
+        <div class="row" style="align-self:end"><button class="primary" id="prepare" type="submit" disabled>Prepare</button></div>
+      </form>
+      <p id="timeouts" class="muted"></p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Session</h2>
+    <div class="grid">
+      <div class="stat"><div class="k">Task</div><div class="v" id="sTask">—</div></div>
+      <div class="stat"><div class="k">Lifecycle</div><div class="v" id="sStatus">—</div></div>
+      <div class="stat"><div class="k">Stage</div><div class="v" id="sStage">—</div></div>
+      <div class="stat"><div class="k">Manual success</div><div class="v" id="sManual">—</div></div>
+      <div class="stat"><div class="k">Exploration used</div><div class="v" id="sEpisodes">—</div></div>
+      <div class="stat"><div class="k">Formal success</div><div class="v" id="sFormal">—</div></div>
+      <div class="stat"><div class="k">Formal average score</div><div class="v" id="sScore">—</div></div>
+      <div class="stat"><div class="k">Codex tokens</div><div class="v" id="sTokens">—</div></div>
+      <div class="stat"><div class="k">Gemini spend</div><div class="v" id="sGemini">—</div></div>
+      <div class="stat"><div class="k">Gemini calls (dev / formal)</div><div class="v" id="sGeminiCalls">—</div></div>
+      <div class="stat"><div class="k">Agent</div><div class="v" id="sAgent">—</div></div>
+    </div>
+    <pre id="command" class="muted">No session selected.</pre>
+    <div class="row" style="margin-top:8px">
+      <button class="primary" id="launch" type="button" disabled>Launch</button>
+      <button class="danger" id="stop" type="button" disabled>Stop</button>
+      <button id="copy" type="button" data-copy="command" disabled>Copy command</button>
+    </div>
+    <p id="paths" class="mono muted"></p>
+  </section>
+
+  <section>
+    <h2>Live cameras</h2>
+    <p id="liveStatus" class="muted">No native observation yet.</p>
+    <p id="liveMetrics" class="mono muted"></p>
+    <div class="cameras">
+      <figure><img id="cam_high" alt="cam_high" hidden><figcaption>cam_high</figcaption></figure>
+      <figure><img id="cam_left_wrist" alt="cam_left_wrist" hidden><figcaption>cam_left_wrist</figcaption></figure>
+      <figure><img id="cam_right_wrist" alt="cam_right_wrist" hidden><figcaption>cam_right_wrist</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Official release</h2>
+    <p id="release" class="muted">No rehearsed or submitted bundle yet.</p>
+    <div id="releaseCommands" hidden>
+      <div class="k muted">1. Check one episode on the official XPolicyLab stack (pristine upstream RoboDojo, real simulator)</div>
+      <pre id="officialCheck"></pre>
+      <button type="button" data-copy="officialCheck">Copy</button>
+      <div class="k muted" style="margin-top:10px">2. Build the download-and-run checkpoint (bundle, wheelhouse, prebuilt kernels, SHA256SUMS)</div>
+      <pre id="buildCheckpoint"></pre>
+      <button type="button" data-copy="buildCheckpoint">Copy</button>
+      <div id="variant" hidden style="margin-top:10px">
+        <div class="k muted">3. Generalization variant: official sweeps run <span id="variantTask" class="mono"></span>
+          as a separate task, loaded from its own bundle directory</div>
+        <p id="variantNote"></p>
+        <pre id="buildCombined" hidden></pre>
+        <button id="copyCombined" type="button" data-copy="buildCombined" hidden>Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Trajectory videos</h2>
+    <p class="muted">Every simulator episode of this session: exploration, rehearsals and formal
+      episodes. Videos are the simulator's own recordings (25 fps; cam_high, left wrist and right
+      wrist side by side).</p>
+    <div class="row">
+      <label class="inline">Speed <select id="speed">
+        <option value="0.5">0.5×</option><option value="1" selected>1×</option>
+        <option value="2">2×</option><option value="4">4×</option><option value="8">8×</option>
+      </select></label>
+      <a id="download" hidden download>Download MP4</a>
+      <span id="playing" class="muted"></span>
+    </div>
+    <video id="video" controls preload="metadata" hidden></video>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>#</th><th>Mode</th><th>Episode</th><th>Steps</th><th>Result</th><th>Score</th><th>Video</th></tr></thead>
+        <tbody id="episodes"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Results</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Run</th><th>Bundle</th><th>Task complete</th><th>Reason</th><th>Details</th></tr></thead>
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+    <details id="artifactViewer" style="margin-top:10px">
+      <summary>Artifact viewer</summary>
+      <p id="artifactPath" class="mono"></p>
+      <img id="artifactImage" alt="Selected artifact" hidden>
+      <pre id="artifactText" hidden></pre>
+    </details>
+  </section>
+
+  <section>
+    <h2>Logs and configuration</h2>
+    <details><summary>Agent log</summary><pre id="agentLog"></pre></details>
+    <details><summary>MCP frontend log</summary><pre id="frontendLog"></pre></details>
+    <details><summary>Configuration and bundles</summary><pre id="configuration"></pre></details>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

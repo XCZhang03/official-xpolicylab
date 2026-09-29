@@ -1,0 +1,4 @@
+interface:
+  display_name: "In-context Action Learning"
+  short_description: "Learn task strategy from supplied images"
+  default_prompt: "Use $in-context-action-learning to infer task intent from the supplied completion image sequence or terminal-state image, then ground new RoboDojo actions from current observations."

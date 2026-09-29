@@ -1,0 +1,35 @@
+policy_name: AgentBundle
+protocol: ws
+host: localhost
+port: null
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+action_type: null
+gpu_id: null
+eval_batch: false
+# The official simulator client waits 120 s per request (PolicyEvalClientConfig
+# default; eval_env.py does not pass request_timeout_s, and this file does not reach
+# the client). A timeout is fatal for the trial, so get_action must answer well
+# before that: when the bundle is still computing after action_wait_s, the bridge
+# returns one hold step instead. The margin covers observation transfer and a remote
+# policy server's network latency. request_timeout_s is read only by the debug client.
+request_timeout_s: 120.0
+action_wait_s: 90.0
+# Optional explicit bundle directory (relative to this policy directory).
+bundle_path: null
+output_dir: null
+# Build and warm the toolkit's cuRobo planner at load (see model.py).
+warmup_planner: true
+planner_config: official
+# gemini_generate on our hosted agent API workers. The key comes from the
+# server's environment (gemini_key_env) or a private file (gemini_key_file), never the
+# checkpoint; without a key the tool reports that it is not configured.
+gemini_enabled: true
+gemini_key_env: OPENROUTER_API_KEY
+gemini_key_file: null
+gemini_budget_usd: 10.0
+# As a worker of our agent API (serve_endpoint.sh): the token the endpoint must present.
+server_token_env: AGENTBUNDLE_SERVER_TOKEN

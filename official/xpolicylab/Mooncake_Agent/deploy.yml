@@ -1,0 +1,21 @@
+policy_name: Mooncake_Agent
+protocol: ws
+host: localhost
+port: null
+bench_name: null
+task_name: null
+ckpt_name: null
+env_cfg_type: null
+seed: null
+action_type: null
+gpu_id: null
+eval_batch: false
+# Remote agent API. The endpoint comes from MOONCAKE_BASE_URL (or base_url here) and
+# the key from the environment variable named by api_key_env. No default host.
+base_url: null
+api_key_env: MOONCAKE_API_KEY
+# Per-request timeout, below the simulator client's 120 s; one retry on a dropped link.
+api_timeout_s: 110.0
+api_retries: 1
+# Camera frames are sent losslessly as PNG (jpg or raw are also accepted).
+image_format: png

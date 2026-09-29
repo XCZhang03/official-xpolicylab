@@ -1,0 +1,13 @@
+# Source pins used by scripts/bootstrap_sources.sh.
+ROBODOJO_URL=https://github.com/RoboDojo-Benchmark/RoboDojo.git
+ROBODOJO_COMMIT=ee67a1468510da7624a089164402359f2afc72c8
+ROBODOJO_PATCH_SHA256=36b18572b289e72033aae7b5536de743ba234712e670ddea82df3a7aff9cd9e9
+# Unmerged upstream PR #48 (487e425), isolated from our robot-control patch.
+ROBODOJO_DRIVE_RESET_PATCH_SHA256=bd1b834b60d19f0948adbf737119f567c87b1b0eeaa1aa9ad34635f1d67bca11
+
+# Known working environments.
+ISAACSIM_VERSION=5.1.0.0
+TORCH_VERSION=2.7.0+cu128
+NUMPY_VERSION=1.26.0
+OPENAI_AGENTS_VERSION=0.22.3
+MCP_VERSION=2.2.0

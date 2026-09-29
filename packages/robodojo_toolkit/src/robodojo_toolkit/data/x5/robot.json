@@ -1,0 +1,20 @@
+{
+  "urdf": "X5A.urdf",
+  "arm_joints": ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"],
+  "base_link": "base_link",
+  "ee_link": "link6",
+  "joint_limits_rad": [[-10, 10], [-10, 10], [-10, 10], [-10, 10], [-10, 10], [-3.14, 3.14]],
+  "roots": {
+    "left": {"position": [-0.3, -0.45, 0.765], "quaternion_wxyz": [0.707, 0.0, 0.0, 0.707]},
+    "right": {"position": [0.3, -0.45, 0.765], "quaternion_wxyz": [0.707, 0.0, 0.0, 0.707]}
+  },
+  "table_height_m": 0.74,
+  "simulation_dt_s": 0.004,
+  "provenance": {
+    "urdf": "RoboDojo Hugging Face assets Assets/Robots/x5/X5A.urdf (Apache-2.0)",
+    "joint_limits_rad": "USD ARX.usd PhysicsRevoluteJoint limits (+/-572.958 deg; joint6 +/-179.909 deg) = URDF limits",
+    "roots": "RoboDojo env_cfg/robot/dual_x5.yml default_root_pos/default_root_rot (upstream ee67a146)",
+    "table_height_m": "RoboDojo robot_manager._setup_planner table_height = 0.74 - root z",
+    "simulation_dt_s": "RoboDojo env_cfg/sim/sim_config.yml dt; planner interpolation_dt"
+  }
+}

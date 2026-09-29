@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gemini"
+  short_description: "Generalizing perception and agentic decisions via Gemini"
+  default_prompt: "Use $gemini for perception that must survive domain randomization or as a function-calling decision agent, refine its coarse outputs with precise geometry, and pressure-test failures, variance, latency and budget."

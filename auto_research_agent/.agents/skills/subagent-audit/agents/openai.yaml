@@ -1,0 +1,4 @@
+interface:
+  display_name: "Subagent Audit"
+  short_description: "Subagent review for layout overfitting"
+  default_prompt: "Use $subagent-audit to spawn a read-only reviewer subagent that flags controller assumptions likely to fail on held-out layouts, then triage and test its findings."
