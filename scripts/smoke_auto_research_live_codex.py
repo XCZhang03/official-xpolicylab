@@ -10,6 +10,7 @@ import subprocess
 
 from harness.codex_cli.auto_research import deploy, launch
 from services.controller.config import Configuration, Limits
+from scripts.smoke_common import add_gpu_arguments, gpu_uuid, integration_root
 
 
 PROMPT = """Run a bounded infrastructure smoke, NOT a task-solving attempt. The operator
@@ -159,6 +160,7 @@ def main():
     group.add_argument('--focused-lifecycle', action='store_true')
     group.add_argument('--minimal-rehearsal', action='store_true')
     group.add_argument('--policy-hands-on', action='store_true')
+    add_gpu_arguments(parser)
     args = parser.parse_args()
     if args.minimal_rehearsal:
         # Validate the exact supplied code against the real SDK with a local MCP fixture.
@@ -171,7 +173,7 @@ def main():
         exec(compile(MINIMAL_CONTROLLER, 'minimal-controller.py', 'exec'), namespace)
         namespace['main'](context)
         assert json.loads(output.getvalue())['params'] == {'name': 'robodojo_observe', 'arguments': {}}
-    root = Path('/mnt/ssd8/xiangcheng/codex-workspaces/robot_agent/runtime/integration-tests') / (
+    root = integration_root() / (
         'live-codex-mcp-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
     image = subprocess.check_output(['docker', 'image', 'inspect', 'robodojo-auto-research:dev',
                                      '--format', '{{.Id}}'], text=True).strip()
@@ -180,9 +182,9 @@ def main():
     config = Configuration(root=root, image=image, task='make_kong',
         exploration_seeds=(0,) if args.minimal_rehearsal else ((0, 1) if args.focused_lifecycle else (0, 1, 2, 3)),
         formal_seed=1 if args.minimal_rehearsal else (2 if args.focused_lifecycle else 4), eval_seed=0,
-        sim_gpu='GPU-c4909b1f-facf-4d9f-049d-3d58cb2ca630',
-        controller_gpu='GPU-17fcc761-79d6-cba8-b2db-b8609a55c0c6',
-        training_gpu='GPU-17fcc761-79d6-cba8-b2db-b8609a55c0c6',
+        sim_gpu=gpu_uuid(args.sim_gpu),
+        controller_gpu=gpu_uuid(args.research_gpu),
+        training_gpu=gpu_uuid(args.research_gpu),
         development=limits, formal=Limits(**{**asdict(limits), 'wall_seconds': 60}) if args.policy_hands_on else limits,
         training=limits,
         workspace_mb=256 if args.minimal_rehearsal else 2048)

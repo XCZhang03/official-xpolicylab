@@ -81,7 +81,7 @@ def test_fresh_dispatch_runs_fifty_once_with_bounded_concurrency(tmp_path, monke
     s['bundles'] = {'bundle': {'directory': 'bundle', 'sha256': 'frozen'}}
     (source/'state.json').write_text(json.dumps(s))
     relative = Path.is_relative_to
-    monkeypatch.setattr(Path, 'is_relative_to', lambda p, base: True if base == '/mnt/ssd8' else relative(p, base))
+    monkeypatch.setattr(Path, 'is_relative_to', lambda p, base: True if str(base) == '/mnt/ssd8' else relative(p, base))
     monkeypatch.setattr(module, 'verify', lambda *a: None)
     monkeypatch.setattr(module, 'validate_layouts', lambda *a: None)
     monkeypatch.setattr(module, 'qualifying_rehearsal', lambda *a: True)

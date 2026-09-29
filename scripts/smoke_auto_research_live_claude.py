@@ -15,6 +15,7 @@ import subprocess
 
 from harness.claude_cli.auto_research import deploy, launch
 from services.controller.config import Configuration, Limits
+from scripts.smoke_common import add_gpu_arguments, gpu_uuid, integration_root
 
 PROMPT = """Run a bounded infrastructure smoke of this agent environment, NOT a task attempt.
 Do not start an episode, register, rehearse, submit or call gemini_generate. Keep every
@@ -40,16 +41,17 @@ def main():
     parser.add_argument('--provider', default='claude-login', choices=('claude-login', 'openrouter', 'anthropic'))
     parser.add_argument('--max-model-calls', type=int, default=25)
     parser.add_argument('--key-file', type=Path, help='openrouter/anthropic key, or a setup-token file')
+    add_gpu_arguments(parser)
     args = parser.parse_args()
-    root = Path('/mnt/ssd8/xiangcheng/codex-workspaces/robot_agent/runtime/integration-tests') / (
+    root = integration_root() / (
         f'live-claude-{args.provider}-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
     image = subprocess.check_output(['docker', 'image', 'inspect', 'robodojo-official:dev',
                                      '--format', '{{.Id}}'], text=True).strip()
     limits = Limits(wall_seconds=300, memory_mb=8192, cpus=4, pids=512, scratch_mb=512, artifact_bytes=128*1024**2)
     config = Configuration(root=root, image=image, task='make_kong', exploration_seeds=(0,), formal_seed=1,
-        eval_seed=0, sim_gpu='GPU-c4909b1f-facf-4d9f-049d-3d58cb2ca630',
-        controller_gpu='GPU-17fcc761-79d6-cba8-b2db-b8609a55c0c6',
-        training_gpu='GPU-17fcc761-79d6-cba8-b2db-b8609a55c0c6',
+        eval_seed=0, sim_gpu=gpu_uuid(args.sim_gpu),
+        controller_gpu=gpu_uuid(args.research_gpu),
+        training_gpu=gpu_uuid(args.research_gpu),
         development=limits, formal=limits, training=limits, workspace_mb=512,
         agent_cli='claude', agent_provider=args.provider)
     key = args.key_file or (Path.home()/'.codex/secrets/openrouter_api_key' if args.provider == 'openrouter' else None)

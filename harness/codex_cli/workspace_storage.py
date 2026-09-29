@@ -7,6 +7,8 @@ from pathlib import Path
 import subprocess
 import uuid
 
+from services.storage_root import artifact_root
+
 
 MOUNT_SCRIPT = '''import fcntl, os, stat, subprocess
 # Docker snapshots /dev at container creation. LOOP_CTL_GET_FREE may allocate a
@@ -42,8 +44,8 @@ def helper(root, image, action, *, output_bytes=None):
 
 def _helper(root, image, action, *, output_bytes=None):
     root = Path(root).resolve()
-    if not root.is_relative_to('/mnt/ssd8') or any(c in str(root) for c in ',\n'):
-        raise ValueError('Storage helper requires a private SSD trial directory')
+    if not root.is_relative_to(artifact_root()) or any(c in str(root) for c in ',\n'):
+        raise ValueError(f'Storage helper requires a private trial directory under {artifact_root()}')
     # This short-lived operator helper runs only mount/umount, never generated code.
     # Shared propagation publishes this one submount back to the SSD parent.
     name = 'robodojo-storage-'+uuid.uuid4().hex
@@ -74,8 +76,8 @@ def _helper(root, image, action, *, output_bytes=None):
 
 def provision(root, image, megabytes):
     root = Path(root).resolve()
-    if not root.is_relative_to('/mnt/ssd8') or any(c in str(root) for c in ',\n'):
-        raise ValueError('Storage must be a private SSD trial directory')
+    if not root.is_relative_to(artifact_root()) or any(c in str(root) for c in ',\n'):
+        raise ValueError(f'Storage must be a private trial directory under {artifact_root()}')
     if type(megabytes) is not int or not 64 <= megabytes <= 1024*1024:
         raise ValueError('workspace_mb must be 64..1048576')
     backing, target = root/'agent-storage.ext4', root/'agent-storage'

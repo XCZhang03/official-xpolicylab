@@ -123,8 +123,9 @@ class Configuration:
             raise ValueError('This release supports only the official observation profile')
         if self.demonstration_context not in DEMONSTRATION_CONTEXTS:
             raise ValueError('Invalid demonstration_context')
-        if not self.root.is_relative_to("/mnt/ssd8"):
-            raise ValueError("Controller artifacts must be on /mnt/ssd8")
+        from services.storage_root import artifact_root, ENVIRONMENT
+        if not self.root.is_relative_to(artifact_root()):
+            raise ValueError(f"Controller artifacts must be under {artifact_root()} (set {ENVIRONMENT} to change it)")
         if type(self.workspace_mb) is not int or not 64 <= self.workspace_mb <= 1048576:
             raise ValueError("workspace_mb must be 64..1048576")
         if not re.fullmatch(r"[A-Za-z0-9_./:-]+@sha256:[a-f0-9]{64}|sha256:[a-f0-9]{64}", self.image):

@@ -95,8 +95,8 @@ def run(source, output, workers, *, bundle_id=None, episodes=50, eval_seed=FORMA
         raise ValueError('workers must be 1..8')
     if formal_wall_seconds is not None and bundle_id is None:
         raise ValueError('Changing the wall limit requires a fresh batch, not migration')
-    if not output.is_relative_to('/mnt/ssd8'):
-        raise ValueError('Evaluation artifacts must be on /mnt/ssd8')
+    from services.storage_root import require_artifact_path
+    require_artifact_path(output, 'Evaluation artifacts')
     # Hold the existing owner lock throughout; never instantiate its Supervisor.
     with (source/'owner.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
